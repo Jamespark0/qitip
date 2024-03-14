@@ -1,0 +1,19 @@
+[project]
+name = "qitip"
+version = "0.1.0"
+description = "Information inequality prover dedicated to quantum information theory"
+authors = [
+    {name = "Shao-Lun Huang", email = "simon.linux7@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.pdm]
+distribution = true
