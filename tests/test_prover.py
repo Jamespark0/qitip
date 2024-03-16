@@ -1,9 +1,10 @@
 import numpy as np
 from numpy.typing import NDArray
 
-from src.qitip.objects import EntropicSpace
+from src.qitip.objects.entropic_space import EntropicSpace
 from src.qitip.prover import Prover
-from src.qitip.quantum_inequalities import QuantumElementalInequalities
+
+# from src.qitip.quantum_inequalities import QuantumElementalInequalities
 
 """
 The prover can also be applied in the classical regime by replacing 
@@ -14,12 +15,13 @@ QuantumElementalInequalities(space).ELEMENtAL with ShannonInequality(space).ELEM
 def test_quantum_strong_subadditivity() -> None:
     n: int = 3
     space = EntropicSpace(n)
-    prover = Prover(
-        elemental=QuantumElementalInequalities(
-            vector_entry=space.vector_entry
-        ).get_elementals(),
-        n=n,
-    )
+    # prover = Prover(
+    #     elemental=QuantumElementalInequalities(
+    #         vector_entry=space.vector_entry
+    #     ).get_elementals(),
+    #     n=n,
+    # )
+    prover = Prover(space=space)
     inequality: NDArray[np.float64] = np.zeros(len(space.vector_entry))
     inequality[space.vector_entry[frozenset({1, 2, 3})]] = -1
     inequality[space.vector_entry[frozenset({3})]] = -1
@@ -36,12 +38,14 @@ def test_quantum_strong_subadditivity() -> None:
 def test_quantum_weak_monotonacity() -> None:
     n: int = 3
     space = EntropicSpace(n=n)
-    prover = Prover(
-        elemental=QuantumElementalInequalities(
-            vector_entry=space.vector_entry
-        ).get_elementals(),
-        n=n,
-    )
+    # prover = Prover(
+    #     elemental=QuantumElementalInequalities(
+    #         vector_entry=space.vector_entry
+    #     ).get_elementals(),
+    #     n=n,
+    # )
+    prover = Prover(space=space)
+
     inequality = np.zeros(len(space.vector_entry))
 
     inequality[space.vector_entry[frozenset({1})]] = -1
@@ -60,12 +64,13 @@ def test_conditional_von_neumann_entropy() -> None:
     n: int = 2
 
     space = EntropicSpace(n=n)
-    prover = Prover(
-        elemental=QuantumElementalInequalities(
-            vector_entry=space.vector_entry
-        ).get_elementals(),
-        n=n,
-    )
+    # prover = Prover(
+    #     elemental=QuantumElementalInequalities(
+    #         vector_entry=space.vector_entry
+    #     ).get_elementals(),
+    #     n=n,
+    # )
+    prover = Prover(space=space)
     inequality = np.zeros(len(space.vector_entry))
 
     inequality[space.vector_entry[frozenset({1, 2})]] = 1
@@ -86,12 +91,13 @@ def test_constrained_non_von_neumann_type() -> None:
     n: int = 4
 
     space = EntropicSpace(n=n)
-    prover = Prover(
-        elemental=QuantumElementalInequalities(
-            vector_entry=space.vector_entry
-        ).get_elementals(),
-        n=n,
-    )
+    # prover = Prover(
+    #     elemental=QuantumElementalInequalities(
+    #         vector_entry=space.vector_entry
+    #     ).get_elementals(),
+    #     n=n,
+    # )
+    prover = Prover(space=space)
 
     constraints = np.zeros((3, len(space.vector_entry)))
     # I(C;A|B) = 0

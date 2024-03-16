@@ -1,11 +1,22 @@
 import numpy as np
 from scipy.optimize import OptimizeResult, linprog
 
+from src.qitip.objects.entropic_space import EntropicSpace
+
+# Prover is created with Quantum Elemental Inequalities
+# In principle, it can also be created with classical elemental inequalities
+from src.qitip.quantum_inequalities import QuantumElementalInequalities
+
 
 class Prover:
-    def __init__(self, elemental: np.ndarray, n: int):
-        self.n = n
-        self.elemental = elemental
+    def __init__(self, space: EntropicSpace):
+        self.n: int = max(max(space.vector_entry))
+        self.elemental = QuantumElementalInequalities(
+            space.vector_entry
+        ).get_elementals()
+
+    def __hash__(self) -> int:
+        return hash((self.n))
 
     def calculate(
         self, inequality: np.ndarray, constraints: np.ndarray

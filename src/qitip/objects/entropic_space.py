@@ -22,6 +22,9 @@ class EntropicSpace:
     _all_pairs: tuple[frozenset[int], ...] = field(init=False)
     _vector_entry: dict[frozenset[int], int] = field(init=False)
 
+    def __hash__(self) -> int:
+        return hash((self.n))
+
     def __post_init__(self):
         self._all_pairs: tuple[frozenset[int], ...] = self.generate_all_pairs(self.n)
         self._vector_entry: dict[frozenset[int], int] = {

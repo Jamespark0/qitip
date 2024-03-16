@@ -1,7 +1,7 @@
 import numpy as np
 from qitip.quantum_inequalities import QuantumElementalInequalities
 
-from src.qitip.objects import EntropicSpace
+from src.qitip.objects.entropic_space import EntropicSpace
 
 
 def test_two_system_type_1() -> None:
