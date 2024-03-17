@@ -24,7 +24,7 @@ class Constraints:
     c: InitVar[ArrayLike | None] = field(default=None)
     constraints: np.ndarray = field(init=False)
 
-    def __post_init__(self, c: ArrayLike | None):
+    def __post_init__(self, c: ArrayLike | None = None):
         if c is None:
             self.constraints = np.empty((0, len(self.vector_entry)))
             return
@@ -32,3 +32,7 @@ class Constraints:
         self.constraints = update_constraints(
             curr=np.empty((0, len(self.vector_entry))), new=c
         )
+
+    # TODO: classmethod to create constraints based on coefficients
+    @classmethod
+    def from_coefficients(cls, **kwargs): ...

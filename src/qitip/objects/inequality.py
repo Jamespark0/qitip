@@ -18,3 +18,8 @@ class Inequality:
 
     def __post_init__(self, v):
         self.vector = validate_vector(v=v, dim=len(self.vector_entry)).reshape((1, -1))
+
+    # TODO: classmethod to create inequality based on coefficients
+    @classmethod
+    def from_coefficients(cls, **kwargs):
+        print("This is from classmethod!")
