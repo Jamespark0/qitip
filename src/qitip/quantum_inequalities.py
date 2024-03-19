@@ -19,7 +19,7 @@ class QuantumElementalInequalities:
         self.entire_system: frozenset[int] = max(self.vector_entry.keys())
         self.n: int = max(self.entire_system)
 
-    def _get_type_1_elemental_vector(self, i: int, j: int):
+    def _get_type_1_elemental_vector(self, i: int, j: int) -> NDArray[np.int64]:
         remaining: frozenset[int] = self.entire_system - {i, j}
 
         elemental_i_j: NDArray = np.empty((0, len(self.vector_entry)))
@@ -43,14 +43,16 @@ class QuantumElementalInequalities:
 
         return elemental_i_j
 
-    def _get_type_2_elemental_vector(self, k: int):
+    def _get_type_2_elemental_vector(self, k: int) -> NDArray[np.int64]:
         intersection = {k}
 
         i_diff_j = {(k + 1) % self.n if k + 1 > self.n else k + 1}
 
         remaining = self.entire_system - intersection - i_diff_j
 
-        elemental_k = np.empty((0, len(self.vector_entry)))
+        elemental_k: NDArray[np.int64] = np.empty(
+            (0, len(self.vector_entry)), dtype=np.int8
+        )
 
         for r in range(0, len(remaining) + 1):
             for i_remaning in combinations(remaining, r):
@@ -67,7 +69,7 @@ class QuantumElementalInequalities:
                 if j_remaining != frozenset():
                     vec[self.vector_entry[set_j.difference(set_i)]] = -1
 
-                elemental_k = np.vstack((elemental_k, vec))
+                elemental_k: NDArray[np.int64] = np.vstack((elemental_k, vec))
 
         return elemental_k
 

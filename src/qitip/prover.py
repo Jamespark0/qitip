@@ -1,7 +1,9 @@
+from typing import Optional
+
 import numpy as np
 from scipy.optimize import OptimizeResult, linprog
 
-from src.qitip.objects.entropic_space import EntropicSpace
+from src.qitip.objects import Constraints, EntropicSpace, Inequality, TypeResult
 
 # Prover is created with Quantum Elemental Inequalities
 # In principle, it can also be created with classical elemental inequalities
@@ -15,14 +17,43 @@ class Prover:
             space.vector_entry
         ).get_elementals()
 
+        # This is only used for method isVonNeumannType
+        self._vector_entry = space.vector_entry
+
     def __hash__(self) -> int:
         return hash((self.n))
 
-    def calculate(
-        self, inequality: np.ndarray, constraints: np.ndarray
-    ) -> OptimizeResult:
-        # Negative sign in 'c' arises from the fact that scipy.linprog calculates minimal value
-        return linprog(
+    def _check_type(
+        self,
+        inequality: np.ndarray[
+            np.ndarray[float, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+        constraints: np.ndarray[
+            np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+    ) -> bool:
+        """_summary_
+        In classical ITIP, checking if an inequality is Shannon-type can be proved with linear programming.
+
+        In quantum information, a similar approach is applied.
+
+        In summary, if the maximum value of the dual problem is 0, the inequality is von-Neumann type;
+        otherwise, it is not provable by quantum ITIP.
+
+        Args:
+            inequality (np.ndarray[ np.ndarray[float, np.dtype[np.float64]], np.dtype[np.float64] ]):
+            constraints (np.ndarray[ np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64] ]):
+
+        Raises:
+            ValueError: when scipy successfully get the optimal value which fails to be 0. Inconsistent with the
+            theory
+
+        Returns:
+            bool: if the inequality under the constraints is von-Neumann type, it returns True; otherwise, it returns False.
+        """
+        max_value: int = 0
+
+        result: OptimizeResult = linprog(
             c=-np.zeros(self.elemental.shape[0] + constraints.shape[0]),
             A_eq=np.vstack((self.elemental, -constraints)).transpose(),
             b_eq=inequality,
@@ -31,146 +62,202 @@ class Prover:
                 + [(None, None)] * constraints.shape[0]
             ),
         )
-
-    def check_type(self, result: OptimizeResult) -> bool:
-        max_value: int = 0
-        return (result.success) and (result.fun == max_value)
-
-    def shortest_proof_generator(
-        self, inequality: np.ndarray, constraints: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray] | tuple[None, None]:
-        """
-        This method is called only when the given inequality is von-Neumann-type/Shannon-type
-
-        Following from the paper, "Proving and Disproving Information Inequalities"
-        """
-        # For -z <= mu <= z
-        A_ub = np.zeros(
-            (
-                # self.elemental.shape[0] + 2 * constraints.shape[0],
-                2 * constraints.shape[0],
-                self.elemental.shape[0] + 2 * constraints.shape[0],
+        if not result.success or (result.success and (result.fun == max_value)):
+            return result.success
+        else:
+            raise ValueError(
+                f"Unexpected error has occurred. Expected optimal value is {max_value}, but get {max.func} instead."
             )
+
+    def shortest_proof(
+        self,
+        inequality: np.ndarray[
+            np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+        constraints: np.ndarray[
+            np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+    ) -> tuple[
+        np.ndarray[np.float64, np.dtype[np.float64]],
+        np.ndarray[np.float64, np.dtype[np.float64]],
+    ]:
+        # The vectors are in the order of [y, mu, t] where
+        # |y|_{0} = num of elemental inequalities
+        # |mu|_{0} = |t|_{0} = num of constraints
+        # Also -t <= mu <= t is the constraint
+
+        # Inequality constraints: -t <= mu <= t
+        # Scipy: [A_ub][x] <= [b_ub]
+        ## First, -t <= mu
+        l_ineq = np.concatenate(
+            (
+                np.zeros((constraints.shape[0], self.elemental.shape[0])),
+                -np.identity(constraints.shape[0]),
+                -np.identity(constraints.shape[0]),
+            ),
+            axis=1,
         )
-        # Ensure -z <= mu <= z
-        for row in range(constraints.shape[0]):
-            A_ub[row][row + self.elemental.shape[0]] = 1
-            A_ub[row][row + self.elemental.shape[0] + constraints.shape[0]] = -1
-        for row in range(
-            constraints.shape[0],
-            2 * constraints.shape[0],
-        ):
-            A_ub[row][row] = -1
-            A_ub[row][row - constraints.shape[0]] = -1
+        ## Next, mu <= t
+        r_ineq: np.ndarray[
+            np.ndarray[np.int64, np.dtype[np.int64]], np.dtype[np.int64]
+        ] = np.concatenate(
+            (
+                np.zeros((constraints.shape[0], self.elemental.shape[0])),
+                np.identity(constraints.shape[0]),
+                -np.identity(constraints.shape[0]),
+            ),
+            axis=1,
+        )
 
         result = linprog(
             c=np.array(
-                [
-                    *[1] * self.elemental.shape[0],
-                    *[0] * constraints.shape[0],
-                    *[1] * constraints.shape[0],
-                ]
+                [1] * self.elemental.shape[0]
+                + [0] * constraints.shape[0]
+                + [1] * constraints.shape[0]
             ),
-            A_eq=np.vstack(
-                (
-                    (np.vstack((self.elemental, -constraints))),
-                    np.zeros((constraints.shape[0], constraints.shape[1])),
-                )
-            ).transpose(),
-            b_eq=inequality,
-            bounds=tuple(
-                [(0, None)] * len(self.elemental)
-                + [(None, None)] * (constraints.shape[0])
-                + [(0, None)] * (constraints.shape[0])
-            ),
+            A_ub=np.concatenate((l_ineq, r_ineq), axis=0),
             b_ub=np.zeros(2 * constraints.shape[0]),
-            A_ub=A_ub,
-        )
-        return (
-            (
-                result.x[: self.elemental.shape[0]],
-                result.x[
-                    self.elemental.shape[0] : self.elemental.shape[0]
-                    + constraints.shape[0]
-                ],
-            )
-            if result.success
-            else (None, None)
-        )
-
-    # Different from classical information theory
-    # due to conditional entropy can be negative in the quantum case
-    def disprove_dual_gamma(
-        self, n: int, inequality: np.ndarray, constraints: np.ndarray
-    ) -> np.ndarray:
-        # Recall that quantum conditional entropy can be negative -> S(universal) is not the maximum entropy
-        # The minimum value should be positive, as linprog finds minimum value
-        result = linprog(
-            c=np.array(
-                [0] * (self.elemental.shape[0] + constraints.shape[0]) + [1] * n
-            ),
-            A_eq=np.vstack(
+            A_eq=np.concatenate(
                 (
-                    np.vstack((self.elemental, -constraints)),
-                    -1 * np.eye(N=n, M=inequality.shape[1], dtype=np.int64),
-                )
+                    self.elemental,
+                    -constraints,
+                    np.zeros((constraints.shape[0], constraints.shape[1])),
+                ),
+                axis=0,
             ).transpose(),
             b_eq=inequality,
             bounds=tuple(
                 [(0, None)] * self.elemental.shape[0]
                 + [(None, None)] * constraints.shape[0]
-                + [(0, None)] * n
+                + [(0, None)] * constraints.shape[0]
             ),
-            method="interior-point",
-            options={"disp": False},
         )
 
-        if result.success is False:
-            raise ValueError("Unable to find the optimal solution!")
+        if not result.success:
+            raise ValueError("Solution to shortest proof is not found ... ")
 
-        # print(f"Success: {result.success}")
-        # print(
-        #     f"The minimum value for non-von-Neumann type, {-1 * result.fun if result.success else None}, should be negative"
-        # )
-
-        return result.x[-n:]
-
-    def disprove_primal_gamma(self, inequality: np.ndarray, constraints: np.ndarray):
-        result = linprog(
-            c=inequality[0],
-            A_ub=-self.elemental,
-            b_ub=np.zeros(self.elemental.shape[0]),
-            A_eq=constraints,
-            b_eq=np.zeros(constraints.shape[0]),
-            bounds=tuple([(0, 10)] * inequality.shape[1]),
-            method="highs",
+        return (
+            result.x[: self.elemental.shape[0]],
+            result.x[
+                self.elemental.shape[0] : self.elemental.shape[0] + constraints.shape[0]
+            ],
         )
 
-        if result.x is None:
-            raise ValueError("No optimal solution!")
+    # In theory, the maximal value of the dual problem cannot be found
+    # We have to restrict our search in a bounded region.
+    # Different from the classical information theory, marginal entropies are bounded by
+    # H(all random variable)
+    def counter_proof_gamma(
+        self,
+        inequality: np.ndarray[
+            np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+        constraints: np.ndarray[
+            np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+    ) -> np.ndarray[np.float64, np.dtype[np.float64]]:
+        # In quantum information theory, the closest counterpart is that a S(I) <= sum_{i in I}S({i})
+        # Hence, I require, S({i}) <= 1 where i in {1,2,3,...,n}
 
-        print(f"Success: {result.success}")
-        print(
-            f"The minimum value for non-von-Neumann type, {result.fun if result.success else None}, should be negative"
+        # The vector we will be working with is in the order of [y, mu, gamma]
+        result: OptimizeResult = linprog(
+            c=np.array(
+                [0] * (self.elemental.shape[0] + constraints.shape[0]) + [1] * self.n
+            ),
+            A_eq=np.concatenate(
+                (
+                    self.elemental,
+                    -constraints,
+                    -np.eye(N=self.n, M=self.elemental.shape[1]),
+                ),
+                axis=0,
+            ).transpose(),
+            b_eq=inequality,
+            bounds=tuple(
+                [(0, None)] * self.elemental.shape[0]
+                + [(None, None)] * constraints.shape[0]
+                + [(0, None)] * self.n
+            ),
+            method="interior-point",  # This yields more desiring result than the default,  HiGHS
         )
-        print(result.ineqlin.marginals)
 
-        return -result.fun if result.success else np.inf
+        if result.status is False:
+            raise ValueError(
+                "Expect optimal value of dual problem under the bounded marginal entropies to be found ..."
+            )
 
-    def shortest_disprove_generator(
-        self, n: int, inequality: np.ndarray, constraints: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray] | tuple[None, None]:
-        gamma: np.ndarray = self.disprove_dual_gamma(
-            n=n, inequality=inequality, constraints=constraints
+        return result.x[-self.n :]
+
+    def shortest_counter_proof(
+        self,
+        inequality: np.ndarray[
+            np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+        constraints: np.ndarray[
+            np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
+        ],
+    ) -> tuple[
+        np.ndarray[np.float64, np.dtype[np.float64]],
+        np.ndarray[np.float64, np.dtype[np.float64]],
+    ]:
+        # This is quite complicated, for more information, checkout my master's thesis about
+        # the theory of quantum ITIP
+        gamma: np.ndarray[np.float64, np.dtype[np.float64]] = self.counter_proof_gamma(
+            inequality=inequality, constraints=constraints
         )
 
-        return self.shortest_proof_generator(
+        return self.shortest_proof(
             inequality=inequality
-            + np.matmul(gamma, np.eye(N=n, M=inequality.shape[1])),
+            + np.matmul(gamma, np.eye(N=self.n, M=self.elemental.shape[1])),
             constraints=constraints,
         )
 
-    def _universal_set_basis_vector(self, dim: int) -> np.ndarray:
-        basis = np.zeros(dim)
-        basis[-1] = 1
-        return basis
+    def isVonNeumannType(
+        self, inequality: Inequality, constraints: Optional[Constraints] = None
+    ) -> TypeResult:
+
+        if constraints is None:
+            _constraints = Constraints(vector_entry=self._vector_entry)
+        else:
+            _constraints = constraints
+
+        status: bool = self._check_type(
+            inequality=inequality.vector, constraints=_constraints.constraints
+        )
+
+        print(f"status: {status}")
+
+        inequality_entry: tuple[np.ndarray[np.int64, np.dtype[np.int64]], ...] = tuple(
+            self.elemental
+        )
+
+        constraints_entry: (
+            tuple[np.ndarray[np.float64, np.dtype[np.float64]], ...] | tuple[()]
+        ) = tuple(_constraints.constraints)
+
+        if status:
+            # if the inequality is von-Neumann type
+            used_inequalities, used_constraints = self.shortest_proof(
+                inequality=inequality.vector, constraints=_constraints.constraints
+            )
+        else:
+            temp_used_inequalities, temp_used_constraints = self.shortest_counter_proof(
+                inequality=inequality.vector, constraints=_constraints.constraints
+            )
+            used_inequalities: np.ndarray[np.float64, np.dtype[np.float64]] = (
+                temp_used_inequalities > 0
+            ).astype(int)
+            used_constraints: np.ndarray[np.float64, np.dtype[np.float64]] = (
+                temp_used_constraints > 0
+            ).astype(int)
+
+        messages: tuple[str, ...] = ("",)
+
+        return TypeResult(
+            status=status,
+            inequality_entry=inequality_entry,
+            constraint_entry=constraints_entry,
+            used_inequalities=used_inequalities,
+            used_constraints=used_constraints,
+            messages=messages,
+        )

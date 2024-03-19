@@ -32,7 +32,3 @@ class Constraints:
         self.constraints = update_constraints(
             curr=np.empty((0, len(self.vector_entry))), new=c
         )
-
-    # TODO: classmethod to create constraints based on coefficients
-    @classmethod
-    def from_coefficients(cls, **kwargs): ...

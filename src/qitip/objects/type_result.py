@@ -1,10 +1,13 @@
 from dataclasses import dataclass
 
+from numpy.typing import NDArray
 
-@dataclass
+
+@dataclass(kw_only=True)
 class TypeResult:
     status: bool
-    vector_entry: dict[frozenset[int], int]
-    used_inequalities: tuple[tuple[float]]
-    used_constraints: tuple[tuple[float]] | None
-    messages: tuple[str]
+    inequality_entry: tuple[NDArray, ...] | tuple[()] | None
+    constraint_entry: tuple[NDArray, ...] | tuple[()] | None
+    used_inequalities: NDArray
+    used_constraints: NDArray | None
+    messages: tuple[str, ...]

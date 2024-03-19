@@ -1,7 +1,6 @@
-from numpy.typing import ArrayLike
-
+from src.qitip.builders import ConstraintsBuilder, InequalityBuilder
 from src.qitip.object_pools import ProverPool, SpacePool
-from src.qitip.objects import Constraints, EntropicSpace, Inequality
+from src.qitip.objects import EntropicSpace
 from src.qitip.prover import Prover
 
 
@@ -11,10 +10,22 @@ class Qitip:
 
     def __init__(self, n: int):
         self._space: EntropicSpace = self._space_pool.get(n)
-        self.prover: Prover = self._prover_pool.get(space=self._space)
+        self._prover: Prover = self._prover_pool.get(space=self._space)
+        self.inequality: InequalityBuilder = InequalityBuilder(
+            vector_entry=self._space.vector_entry
+        )
+        self.constraints: ConstraintsBuilder = ConstraintsBuilder(
+            vector_entry=self._space.vector_entry
+        )
 
-    def inequality(self, v: ArrayLike) -> Inequality:
-        return Inequality(vector_entry=self._space.vector_entry, v=v)
+    @property
+    def vector_entry(self):
+        return self._space.vector_entry
 
-    def constraints(self, c: ArrayLike | None = None) -> Constraints:
-        return Constraints(vector_entry=self._space.vector_entry, c=c)
+    @property
+    def space(self):
+        return self._space
+
+    @property
+    def prover(self):
+        return self._prover

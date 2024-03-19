@@ -7,6 +7,7 @@ from dataclasses import InitVar, dataclass, field
 import numpy as np
 from numpy.typing import ArrayLike
 
+from src.qitip.objects import EntropicSpace
 from src.qitip.validators import validate_vector
 
 
@@ -19,7 +20,5 @@ class Inequality:
     def __post_init__(self, v):
         self.vector = validate_vector(v=v, dim=len(self.vector_entry)).reshape((1, -1))
 
-    # TODO: classmethod to create inequality based on coefficients
-    @classmethod
-    def from_coefficients(cls, **kwargs):
-        print("This is from classmethod!")
+    def embed(self, space: EntropicSpace):
+        raise NotImplementedError("To be implemented ...")
