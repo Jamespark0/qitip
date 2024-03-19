@@ -86,14 +86,18 @@ class Prover:
         # |mu|_{0} = |t|_{0} = num of constraints
         # Also -t <= mu <= t is the constraint
 
+        num_elementals: int = self.elemental.shape[0]
+        num_constraints: int = constraints.shape[0]
+        dim: int = len(self._vector_entry)
+
         # Inequality constraints: -t <= mu <= t
         # Scipy: [A_ub][x] <= [b_ub]
         ## First, -t <= mu
         l_ineq = np.concatenate(
             (
-                np.zeros((constraints.shape[0], self.elemental.shape[0])),
-                -np.identity(constraints.shape[0]),
-                -np.identity(constraints.shape[0]),
+                np.zeros((num_constraints, num_elementals)),
+                -np.identity(num_constraints),
+                -np.identity(num_constraints),
             ),
             axis=1,
         )
@@ -102,34 +106,32 @@ class Prover:
             np.ndarray[np.int64, np.dtype[np.int64]], np.dtype[np.int64]
         ] = np.concatenate(
             (
-                np.zeros((constraints.shape[0], self.elemental.shape[0])),
-                np.identity(constraints.shape[0]),
-                -np.identity(constraints.shape[0]),
+                np.zeros((num_constraints, num_elementals)),
+                np.identity(num_constraints),
+                -np.identity(num_constraints),
             ),
             axis=1,
         )
 
         result = linprog(
             c=np.array(
-                [1] * self.elemental.shape[0]
-                + [0] * constraints.shape[0]
-                + [1] * constraints.shape[0]
+                [1] * num_elementals + [0] * num_constraints + [1] * num_constraints
             ),
             A_ub=np.concatenate((l_ineq, r_ineq), axis=0),
-            b_ub=np.zeros(2 * constraints.shape[0]),
+            b_ub=np.zeros(2 * num_constraints),
             A_eq=np.concatenate(
                 (
                     self.elemental,
                     -constraints,
-                    np.zeros((constraints.shape[0], constraints.shape[1])),
+                    np.zeros((num_constraints, dim)),
                 ),
                 axis=0,
             ).transpose(),
             b_eq=inequality,
             bounds=tuple(
-                [(0, None)] * self.elemental.shape[0]
-                + [(None, None)] * constraints.shape[0]
-                + [(0, None)] * constraints.shape[0]
+                [(0, None)] * num_elementals
+                + [(None, None)] * num_constraints
+                + [(0, None)] * num_constraints
             ),
         )
 
@@ -137,10 +139,8 @@ class Prover:
             raise ValueError("Solution to shortest proof is not found ... ")
 
         return (
-            result.x[: self.elemental.shape[0]],
-            result.x[
-                self.elemental.shape[0] : self.elemental.shape[0] + constraints.shape[0]
-            ],
+            result.x[:num_elementals],
+            result.x[num_elementals : num_elementals + num_constraints],
         )
 
     # In theory, the maximal value of the dual problem cannot be found
