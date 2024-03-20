@@ -1,7 +1,17 @@
 import numpy as np
-from qitip.quantum_inequalities import QuantumElementalInequalities
+import pytest
 
 from src.qitip.objects.entropic_space import EntropicSpace
+from src.qitip.quantum_inequalities import QuantumElementalInequalities
+
+
+def test_one_system_all_inequalities():
+    n: int = 1
+
+    space: EntropicSpace = EntropicSpace(n=n)
+
+    with pytest.raises(ValueError):
+        QuantumElementalInequalities(vector_entry=space.vector_entry).get_elementals()
 
 
 def test_two_system_type_1() -> None:

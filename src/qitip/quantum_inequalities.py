@@ -19,6 +19,11 @@ class QuantumElementalInequalities:
         self.entire_system: frozenset[int] = max(self.vector_entry.keys())
         self.n: int = max(self.entire_system)
 
+        if self.n < 2:
+            raise ValueError(
+                f"Number of quantum systems should be >= 2; {self.n} is given instead."
+            )
+
     def _get_type_1_elemental_vector(self, i: int, j: int) -> NDArray[np.int64]:
         remaining: frozenset[int] = self.entire_system - {i, j}
 
