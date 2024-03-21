@@ -1,11 +1,11 @@
-from typing import Callable, Optional, Sequence
+from typing import Callable, Iterable, Optional
 
 from numpy.typing import ArrayLike
 
 from src.qitip.objects import Constraints, Inequality
 
 
-def convert_tuple_int_to_set(key: Sequence[int] | int) -> frozenset[int]:
+def convert_iterable_int_to_set(key: Iterable[int] | int) -> frozenset[int]:
     if isinstance(key, int):
         return frozenset({key})
     elif all([isinstance(i, int) for i in key]):
@@ -18,12 +18,12 @@ def convert_tuple_int_to_set(key: Sequence[int] | int) -> frozenset[int]:
 
 def create_vector_with_coefficient(
     vector_entry: dict[frozenset[int], int]
-) -> Callable[[dict[Sequence[int] | int, float]], tuple[float, ...]]:
+) -> Callable[[dict[Iterable[int] | int, float]], tuple[float, ...]]:
     def assign_coefficients(
-        coefficients: dict[Sequence[int] | int, float]
+        coefficients: dict[Iterable[int] | int, float]
     ) -> tuple[float, ...]:
         sys_coefficients: dict[frozenset[int], float] = {
-            convert_tuple_int_to_set(k): v for k, v in coefficients.items()
+            convert_iterable_int_to_set(k): v for k, v in coefficients.items()
         }
 
         # Create a tuple of coeffcients in the order of vector entry
@@ -32,6 +32,24 @@ def create_vector_with_coefficient(
         return tuple(
             sys_coefficients[key] if sys_coefficients.get(key, None) else 0
             for key in vector_entry.keys()
+        )
+
+    return assign_coefficients
+
+
+def create_matrix_with_coefficient_list(
+    vector_entry: dict[frozenset[int], int]
+) -> Callable[
+    [Iterable[dict[Iterable[int] | int, float]]], tuple[tuple[float, ...], ...]
+]:
+    def assign_coefficients(
+        coefficient_list: Iterable[dict[Iterable[int] | int, float]]
+    ) -> tuple[tuple[float, ...], ...]:
+        return tuple(
+            [
+                create_vector_with_coefficient(vector_entry)(coefficients)
+                for coefficients in coefficient_list
+            ]
         )
 
     return assign_coefficients
@@ -53,7 +71,7 @@ class InequalityBuilder:
 
     # As the number of coefficients increases, it is easier to
     # create an object by specifying the coefficients
-    def from_coefficients(self, v: dict[Sequence[int] | int, float]) -> Inequality:
+    def from_coefficients(self, v: dict[Iterable[int] | int, float]) -> Inequality:
         return Inequality(
             vector_entry=self._vector_entry,
             v=create_vector_with_coefficient(vector_entry=self._vector_entry)(v),
@@ -73,8 +91,10 @@ class ConstraintsBuilder:
     # As the number of coefficients increases, it is easier to
     # create an object by specifying the coefficients
     # But only one constraint can be created with this method
-    def from_coefficients(self, c: dict[Sequence[int] | int, float]):
+    def from_coefficients(
+        self, c: Iterable[dict[Iterable[int] | int, float]]
+    ) -> Constraints:
         return Constraints(
             vector_entry=self._vector_entry,
-            c=create_vector_with_coefficient(vector_entry=self._vector_entry)(c),
+            c=create_matrix_with_coefficient_list(vector_entry=self._vector_entry)(c),
         )

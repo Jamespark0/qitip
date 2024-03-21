@@ -7,7 +7,6 @@ from dataclasses import InitVar, dataclass, field
 import numpy as np
 from numpy.typing import ArrayLike
 
-from src.qitip.objects import EntropicSpace
 from src.qitip.validators import validate_vector
 
 
@@ -15,10 +14,9 @@ from src.qitip.validators import validate_vector
 class Inequality:
     vector_entry: dict[frozenset[int], int]
     v: InitVar[ArrayLike]
-    vector: np.ndarray = field(init=False)
+    coefficients: np.ndarray = field(init=False)
 
     def __post_init__(self, v):
-        self.vector = validate_vector(v=v, dim=len(self.vector_entry)).reshape((1, -1))
-
-    def embed(self, space: EntropicSpace):
-        raise NotImplementedError("To be implemented ...")
+        self.coefficients = validate_vector(v=v, dim=len(self.vector_entry)).reshape(
+            (1, -1)
+        )

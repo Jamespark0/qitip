@@ -222,7 +222,7 @@ class Prover:
             _constraints = constraints
 
         status: bool = self._check_type(
-            inequality=inequality.vector, constraints=_constraints.constraints
+            inequality=inequality.coefficients, constraints=_constraints.coefficients
         )
 
         print(f"status: {status}")
@@ -233,16 +233,18 @@ class Prover:
 
         constraints_entry: (
             tuple[np.ndarray[np.float64, np.dtype[np.float64]], ...] | tuple[()]
-        ) = tuple(_constraints.constraints)
+        ) = tuple(_constraints.coefficients)
 
         if status:
             # if the inequality is von-Neumann type
             used_inequalities, used_constraints = self.shortest_proof(
-                inequality=inequality.vector, constraints=_constraints.constraints
+                inequality=inequality.coefficients,
+                constraints=_constraints.coefficients,
             )
         else:
             temp_used_inequalities, temp_used_constraints = self.shortest_counter_proof(
-                inequality=inequality.vector, constraints=_constraints.constraints
+                inequality=inequality.coefficients,
+                constraints=_constraints.coefficients,
             )
             used_inequalities: np.ndarray[np.float64, np.dtype[np.float64]] = (
                 temp_used_inequalities > 0
