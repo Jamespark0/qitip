@@ -9,17 +9,17 @@ vector_entry: dict[frozenset[int], int] = {
 
 def test_empty_constraint_initialization():
     empty_constraint = Constraints(vector_entry=vector_entry)
-    assert empty_constraint.constraints.shape == (0, len(vector_entry))
+    assert empty_constraint.coefficients.shape == (0, len(vector_entry))
 
 
 def test_single_constraint_initialization_with_vector():
     single_constraint = Constraints(vector_entry, (1, 0, 0))
-    assert single_constraint.constraints.shape == (1, len(vector_entry))
+    assert single_constraint.coefficients.shape == (1, len(vector_entry))
 
 
 def test_single_constraint_initialization_with_matrix():
     single_constraint = Constraints(vector_entry, ((1, 0, 0),))
-    assert single_constraint.constraints.shape == (1, len(vector_entry))
+    assert single_constraint.coefficients.shape == (1, len(vector_entry))
 
 
 def test_multiple_constraints_initialization():
@@ -29,4 +29,4 @@ def test_multiple_constraints_initialization():
         for _ in range(num_constraints)
     ]
     multi_constraints = Constraints(vector_entry, c)
-    assert multi_constraints.constraints.shape == (num_constraints, len(vector_entry))
+    assert multi_constraints.coefficients.shape == (num_constraints, len(vector_entry))
