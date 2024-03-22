@@ -69,7 +69,7 @@ class Prover:
                 f"Unexpected error has occurred. Expected optimal value is {max_value}, but get {max.func} instead."
             )
 
-    def shortest_proof(
+    def _shortest_proof(
         self,
         inequality: np.ndarray[
             np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
@@ -147,7 +147,7 @@ class Prover:
     # We have to restrict our search in a bounded region.
     # Different from the classical information theory, marginal entropies are bounded by
     # H(all random variable)
-    def counter_proof_gamma(
+    def _counter_proof_gamma(
         self,
         inequality: np.ndarray[
             np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
@@ -188,7 +188,7 @@ class Prover:
 
         return result.x[-self.n :]
 
-    def shortest_counter_proof(
+    def _shortest_counter_proof(
         self,
         inequality: np.ndarray[
             np.ndarray[np.float64, np.dtype[np.float64]], np.dtype[np.float64]
@@ -202,11 +202,11 @@ class Prover:
     ]:
         # This is quite complicated, for more information, checkout my master's thesis about
         # the theory of quantum ITIP
-        gamma: np.ndarray[np.float64, np.dtype[np.float64]] = self.counter_proof_gamma(
+        gamma: np.ndarray[np.float64, np.dtype[np.float64]] = self._counter_proof_gamma(
             inequality=inequality, constraints=constraints
         )
 
-        return self.shortest_proof(
+        return self._shortest_proof(
             inequality=inequality
             + np.matmul(gamma, np.eye(N=self.n, M=self.elemental.shape[1])),
             constraints=constraints,
@@ -237,14 +237,16 @@ class Prover:
 
         if status:
             # if the inequality is von-Neumann type
-            used_inequalities, used_constraints = self.shortest_proof(
+            used_inequalities, used_constraints = self._shortest_proof(
                 inequality=inequality.coefficients,
                 constraints=_constraints.coefficients,
             )
         else:
-            temp_used_inequalities, temp_used_constraints = self.shortest_counter_proof(
-                inequality=inequality.coefficients,
-                constraints=_constraints.coefficients,
+            temp_used_inequalities, temp_used_constraints = (
+                self._shortest_counter_proof(
+                    inequality=inequality.coefficients,
+                    constraints=_constraints.coefficients,
+                )
             )
             used_inequalities: np.ndarray[np.float64, np.dtype[np.float64]] = (
                 temp_used_inequalities > 0

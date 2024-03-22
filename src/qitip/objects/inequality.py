@@ -18,5 +18,5 @@ class Inequality:
 
     def __post_init__(self, v):
         self.coefficients = validate_vector(v=v, dim=len(self.vector_entry)).reshape(
-            (1, -1)
+            (-1,)
         )

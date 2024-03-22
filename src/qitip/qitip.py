@@ -28,8 +28,8 @@ class from_coefficients_to_dict:
         # since each Inequality only contains one inequality
         return dict(
             zip(
-                compress(sys_in_order, non_zeros[0]),
-                compress(obj.coefficients[0], non_zeros[0]),
+                compress(sys_in_order, non_zeros),
+                compress(obj.coefficients, non_zeros),
             )
         )
 

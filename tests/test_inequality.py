@@ -18,7 +18,7 @@ def test_intended_numpy_array():
     vector = (1, 0, 0)
     inequality = Inequality(vector_entry=vector_entry, v=vector)
     assert (inequality.coefficients == np.array([vector])).all()
-    assert (inequality.coefficients.shape) == (1, len(vector))
+    assert (inequality.coefficients.shape) == (len(vector),)
 
 
 def test_v_longer_than_entry_mapping():

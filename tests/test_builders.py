@@ -15,7 +15,7 @@ def test_call_inequality_builder() -> None:
     vec: Sequence[float] = (0, 0, 1)
     inequality: Inequality = builder((0, 0, 1))
 
-    assert inequality.coefficients.shape == (1, len(vector_entry))
+    assert inequality.coefficients.shape == (len(vector_entry),)
     assert (inequality.coefficients == np.array(vec)).all()
 
 
@@ -26,7 +26,7 @@ def test_inequality_built_from_coefficients() -> None:
 
     inequality: Inequality = builder.from_coefficients(vec)
 
-    assert inequality.coefficients.shape == (1, len(vector_entry))
+    assert inequality.coefficients.shape == (len(vector_entry),)
     assert (inequality.coefficients == np.array((-1, 0, 1))).all()
 
 
