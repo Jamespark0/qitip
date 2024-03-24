@@ -1,59 +1,12 @@
-from itertools import compress
-from typing import Iterable
-
-from numpy import dtype, int8, ndarray
+from typing import Optional
 
 from src.qitip.builders import ConstraintsBuilder, InequalityBuilder
 from src.qitip.object_pools import ProverPool, SpacePool
-from src.qitip.objects import Constraints, EntropicSpace, Inequality
+from src.qitip.objects import Constraints, EntropicSpace, Inequality, TypeResult
+from src.qitip.objects.type_result import result_director
 from src.qitip.prover import Prover
 from src.qitip.typings import InfoType
-
-
-class from_coefficients_to_dict:
-    # This function takes an object (can either be Inequality or Constraints) to
-    # 1D arraylike or 2D arraylike
-    @staticmethod
-    def convert_inequality(obj: Inequality) -> dict[Iterable[int] | int, float]:
-        non_zeros: ndarray[ndarray[bool, dtype[int8]], dtype[int8]] = (
-            obj.coefficients != 0
-        )
-
-        # Ensures the sys is in the same order as the vectors
-        sys_in_order: tuple[tuple[int, ...], ...] = tuple(
-            tuple(k)
-            for k, _ in sorted(obj.vector_entry.items(), key=lambda item: item[1])
-        )
-
-        # since each Inequality only contains one inequality
-        return dict(
-            zip(
-                compress(sys_in_order, non_zeros),
-                compress(obj.coefficients, non_zeros),
-            )
-        )
-
-    @staticmethod
-    def convert_constraints(obj: Constraints) -> list[dict[Iterable[int] | int, float]]:
-        non_zeros: ndarray[ndarray[bool, dtype[int8]], dtype[int8]] = (
-            obj.coefficients != 0
-        )
-
-        # Ensures the sys is in the same order as the vectors
-        sys_in_order: tuple[tuple[int, ...], ...] = tuple(
-            tuple(k)
-            for k, _ in sorted(obj.vector_entry.items(), key=lambda item: item[1])
-        )
-
-        return [
-            dict(
-                zip(
-                    compress(sys_in_order, non_zero),
-                    compress(obj.coefficients[index], non_zero),
-                )
-            )
-            for index, non_zero in enumerate(non_zeros)
-        ]
+from src.qitip.utils.converters import CoefficientsToDict
 
 
 class Qitip:
@@ -93,13 +46,20 @@ class Qitip:
         # If the dim(obj) < dim(Qitip), actual embedding
         elif isinstance(obj, Inequality):
             return self.inequality.from_coefficients(
-                from_coefficients_to_dict.convert_inequality(obj)
+                CoefficientsToDict.convert_vector(obj.vector_entry, obj.coefficients)
             )
 
         else:
             return self.constraints.from_coefficients(
-                from_coefficients_to_dict.convert_constraints(obj)
+                CoefficientsToDict.convert_matrix(obj.vector_entry, obj.coefficients)
             )
+
+    def is_vn_type(
+        self, inequality: Inequality, constraints: Optional[Constraints] = None
+    ) -> TypeResult:
+        return result_director(
+            prover=self._prover, inequality=inequality, constraints=constraints
+        )
 
     @property
     def vector_entry(self):
@@ -108,7 +68,3 @@ class Qitip:
     @property
     def space(self):
         return self._space
-
-    @property
-    def prover(self):
-        return self._prover

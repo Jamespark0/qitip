@@ -1,9 +1,7 @@
-from typing import Optional
-
 import numpy as np
 from scipy.optimize import OptimizeResult, linprog
 
-from src.qitip.objects import Constraints, EntropicSpace, Inequality, TypeResult
+from src.qitip.objects import EntropicSpace
 
 # Prover is created with Quantum Elemental Inequalities
 # In principle, it can also be created with classical elemental inequalities
@@ -212,56 +210,56 @@ class Prover:
             constraints=constraints,
         )
 
-    def isVonNeumannType(
-        self, inequality: Inequality, constraints: Optional[Constraints] = None
-    ) -> TypeResult:
+    # def isVonNeumannType(
+    #     self, inequality: Inequality, constraints: Optional[Constraints] = None
+    # ) -> TypeResult:
 
-        if constraints is None:
-            _constraints = Constraints(vector_entry=self._vector_entry)
-        else:
-            _constraints = constraints
+    #     if constraints is None:
+    #         _constraints = Constraints(vector_entry=self._vector_entry)
+    #     else:
+    #         _constraints = constraints
 
-        status: bool = self._check_type(
-            inequality=inequality.coefficients, constraints=_constraints.coefficients
-        )
+    #     status: bool = self._check_type(
+    #         inequality=inequality.coefficients, constraints=_constraints.coefficients
+    #     )
 
-        print(f"status: {status}")
+    #     print(f"status: {status}")
 
-        inequality_entry: tuple[np.ndarray[np.int64, np.dtype[np.int64]], ...] = tuple(
-            self.elemental
-        )
+    #     inequality_entry: tuple[np.ndarray[np.int64, np.dtype[np.int64]], ...] = tuple(
+    #         self.elemental
+    #     )
 
-        constraints_entry: (
-            tuple[np.ndarray[np.float64, np.dtype[np.float64]], ...] | tuple[()]
-        ) = tuple(_constraints.coefficients)
+    #     constraints_entry: (
+    #         tuple[np.ndarray[np.float64, np.dtype[np.float64]], ...] | tuple[()]
+    #     ) = tuple(_constraints.coefficients)
 
-        if status:
-            # if the inequality is von-Neumann type
-            used_inequalities, used_constraints = self._shortest_proof(
-                inequality=inequality.coefficients,
-                constraints=_constraints.coefficients,
-            )
-        else:
-            temp_used_inequalities, temp_used_constraints = (
-                self._shortest_counter_proof(
-                    inequality=inequality.coefficients,
-                    constraints=_constraints.coefficients,
-                )
-            )
-            used_inequalities: np.ndarray[np.float64, np.dtype[np.float64]] = (
-                temp_used_inequalities > 0
-            ).astype(int)
-            used_constraints: np.ndarray[np.float64, np.dtype[np.float64]] = (
-                temp_used_constraints > 0
-            ).astype(int)
+    #     if status:
+    #         # if the inequality is von-Neumann type
+    #         used_inequalities, used_constraints = self._shortest_proof(
+    #             inequality=inequality.coefficients,
+    #             constraints=_constraints.coefficients,
+    #         )
+    #     else:
+    #         temp_used_inequalities, temp_used_constraints = (
+    #             self._shortest_counter_proof(
+    #                 inequality=inequality.coefficients,
+    #                 constraints=_constraints.coefficients,
+    #             )
+    #         )
+    #         used_inequalities: np.ndarray[np.float64, np.dtype[np.float64]] = (
+    #             temp_used_inequalities > 0
+    #         ).astype(int)
+    #         used_constraints: np.ndarray[np.float64, np.dtype[np.float64]] = (
+    #             temp_used_constraints > 0
+    #         ).astype(int)
 
-        messages: tuple[str, ...] = ("",)
+    #     messages: tuple[str, ...] = ("",)
 
-        return TypeResult(
-            status=status,
-            inequality_entry=inequality_entry,
-            constraint_entry=constraints_entry,
-            used_inequalities=used_inequalities,
-            used_constraints=used_constraints,
-            messages=messages,
-        )
+    #     return TypeResult(
+    #         status=status,
+    #         inequality_entry=inequality_entry,
+    #         constraint_entry=constraints_entry,
+    #         used_inequalities=used_inequalities,
+    #         used_constraints=used_constraints,
+    #         messages=messages,
+    #     )

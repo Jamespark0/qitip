@@ -7,7 +7,7 @@ from dataclasses import InitVar, dataclass, field
 import numpy as np
 from numpy.typing import ArrayLike
 
-from src.qitip.validators import validate_vector
+from src.qitip.utils.validators import validate_vector
 
 
 @dataclass

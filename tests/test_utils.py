@@ -2,7 +2,7 @@ from typing import Iterable
 
 from src.qitip.builders import ConstraintsBuilder, InequalityBuilder
 from src.qitip.objects import Constraints, Inequality
-from src.qitip.qitip import from_coefficients_to_dict
+from src.qitip.utils.converters import CoefficientsToDict
 
 # Test with bipartite system for simplicity
 vector_entry: dict[frozenset[int], int] = {
@@ -18,7 +18,7 @@ def test_convert_inequality_coefficients_to_dict() -> None:
     builder = InequalityBuilder(vector_entry)
     inq: Inequality = builder.from_coefficients(vec)
 
-    assert vec == from_coefficients_to_dict.convert_inequality(inq)
+    assert vec == CoefficientsToDict.convert_vector(inq.vector_entry, inq.coefficients)
 
 
 def test_convert_empty_constraints_to_dict() -> None:
@@ -31,7 +31,9 @@ def test_convert_empty_constraints_to_dict() -> None:
     empty_constraint: Constraints = builder.from_coefficients(vec)
 
     # Note that this returns an empty list rather than vec
-    assert [] == from_coefficients_to_dict.convert_constraints(empty_constraint)
+    assert [] == CoefficientsToDict.convert_matrix(
+        empty_constraint.vector_entry, empty_constraint.coefficients
+    )
 
 
 def test_convert_single_constraint_to_dict() -> None:
@@ -41,7 +43,9 @@ def test_convert_single_constraint_to_dict() -> None:
 
     single_constraints: Constraints = builder.from_coefficients(c)
 
-    assert list(c) == from_coefficients_to_dict.convert_constraints(single_constraints)
+    assert list(c) == CoefficientsToDict.convert_matrix(
+        single_constraints.vector_entry, single_constraints.coefficients
+    )
 
 
 def test_convert_multiple_constraints_to_dict() -> None:
@@ -54,4 +58,6 @@ def test_convert_multiple_constraints_to_dict() -> None:
 
     multi_constraints = builder.from_coefficients(c)
 
-    assert list(c) == from_coefficients_to_dict.convert_constraints(multi_constraints)
+    assert list(c) == CoefficientsToDict.convert_matrix(
+        multi_constraints.vector_entry, multi_constraints.coefficients
+    )
