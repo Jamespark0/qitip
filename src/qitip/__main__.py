@@ -6,7 +6,7 @@ while True:
         if n >= 2:
             break
         else:
-            print("Number of quantum systems has to be greater than 1 ...")
+            print("Number of quantum systems has to be greater than 2 ...")
     except ValueError:
         print("Input value should be an integer greater than 1!")
     except Exception:
