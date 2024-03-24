@@ -67,6 +67,11 @@ class Qitip:
             prover=self._prover, inequality=inequality, constraints=constraints
         )
 
+    def check_vn_result(
+        self, inequality: Inequality, constraints: Optional[Constraints] = None
+    ):
+        print(self.is_vn_type(inequality, constraints).message)
+
     @property
     def vector_entry(self):
         return self._space.vector_entry
