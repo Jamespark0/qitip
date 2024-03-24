@@ -2,8 +2,12 @@ from typing import Iterable, Sequence
 
 import numpy as np
 
-from src.qitip.builders import ConstraintsBuilder, InequalityBuilder
-from src.qitip.objects import Constraints, Inequality
+from src.qitip.objects import (
+    Constraints,
+    ConstraintsBuilder,
+    Inequality,
+    InequalityBuilder,
+)
 
 # Test with bipartite system for simplicity
 vector_entry = {frozenset({1}): 0, frozenset({2}): 1, frozenset({1, 2}): 2}

@@ -1,4 +1,4 @@
-from src.qitip.objects.constraints import Constraints
-from src.qitip.objects.entropic_space import EntropicSpace
-from src.qitip.objects.inequality import Inequality
-from src.qitip.objects.type_result import TypeResult
+from src.qitip.objects.constraints import Constraints, ConstraintsBuilder
+from src.qitip.objects.entrospace import EntropicSpace, SpacePool
+from src.qitip.objects.inequality import Inequality, InequalityBuilder
+from src.qitip.objects.type_result import TypeResult, result_director
