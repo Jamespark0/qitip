@@ -210,56 +210,16 @@ class Prover:
             constraints=constraints,
         )
 
-    # def isVonNeumannType(
-    #     self, inequality: Inequality, constraints: Optional[Constraints] = None
-    # ) -> TypeResult:
 
-    #     if constraints is None:
-    #         _constraints = Constraints(vector_entry=self._vector_entry)
-    #     else:
-    #         _constraints = constraints
+class ProverPool:
+    def __init__(self) -> None:
+        self._created: set[Prover] = set()
 
-    #     status: bool = self._check_type(
-    #         inequality=inequality.coefficients, constraints=_constraints.coefficients
-    #     )
+    def get(self, space: EntropicSpace):
+        for p in self._created:
+            if p.n == space.n:
+                return p
 
-    #     print(f"status: {status}")
-
-    #     inequality_entry: tuple[np.ndarray[np.int64, np.dtype[np.int64]], ...] = tuple(
-    #         self.elemental
-    #     )
-
-    #     constraints_entry: (
-    #         tuple[np.ndarray[np.float64, np.dtype[np.float64]], ...] | tuple[()]
-    #     ) = tuple(_constraints.coefficients)
-
-    #     if status:
-    #         # if the inequality is von-Neumann type
-    #         used_inequalities, used_constraints = self._shortest_proof(
-    #             inequality=inequality.coefficients,
-    #             constraints=_constraints.coefficients,
-    #         )
-    #     else:
-    #         temp_used_inequalities, temp_used_constraints = (
-    #             self._shortest_counter_proof(
-    #                 inequality=inequality.coefficients,
-    #                 constraints=_constraints.coefficients,
-    #             )
-    #         )
-    #         used_inequalities: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    #             temp_used_inequalities > 0
-    #         ).astype(int)
-    #         used_constraints: np.ndarray[np.float64, np.dtype[np.float64]] = (
-    #             temp_used_constraints > 0
-    #         ).astype(int)
-
-    #     messages: tuple[str, ...] = ("",)
-
-    #     return TypeResult(
-    #         status=status,
-    #         inequality_entry=inequality_entry,
-    #         constraint_entry=constraints_entry,
-    #         used_inequalities=used_inequalities,
-    #         used_constraints=used_constraints,
-    #         messages=messages,
-    #     )
+        new_prover = Prover(space=space)
+        self._created.add(new_prover)
+        return new_prover

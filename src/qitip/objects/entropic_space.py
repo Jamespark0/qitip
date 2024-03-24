@@ -45,3 +45,17 @@ class EntropicSpace:
             for size in range(1, n + 1)
             for group in combinations(labeling, r=size)
         )
+
+
+class SpacePool:
+    def __init__(self):
+        self._created: set[EntropicSpace] = set()
+
+    def get(self, n: int) -> EntropicSpace:
+        for s in self._created:
+            if s.n == n:
+                return s
+
+        new_space = EntropicSpace(n=n)
+        self._created.add(new_space)
+        return new_space

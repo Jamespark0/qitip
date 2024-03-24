@@ -1,7 +1,6 @@
 from typing import Iterable
 
 import numpy as np
-import pytest
 
 from src.qitip.objects import Constraints, Inequality
 from src.qitip.qitip import Qitip

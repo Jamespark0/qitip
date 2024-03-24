@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from src.qitip.objects.entropic_space import EntropicSpace
+from src.qitip.objects import EntropicSpace
 from src.qitip.quantum_inequalities import QuantumElementalInequalities
 
 

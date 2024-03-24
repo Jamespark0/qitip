@@ -1,10 +1,16 @@
 from typing import Optional
 
-from src.qitip.builders import ConstraintsBuilder, InequalityBuilder
-from src.qitip.object_pools import ProverPool, SpacePool
-from src.qitip.objects import Constraints, EntropicSpace, Inequality, TypeResult
-from src.qitip.objects.type_result import result_director
-from src.qitip.prover import Prover
+from src.qitip.objects import (
+    Constraints,
+    ConstraintsBuilder,
+    EntropicSpace,
+    Inequality,
+    InequalityBuilder,
+    SpacePool,
+    TypeResult,
+    result_director,
+)
+from src.qitip.prover import Prover, ProverPool
 from src.qitip.typings import InfoType
 from src.qitip.utils.converters import CoefficientsToDict
 

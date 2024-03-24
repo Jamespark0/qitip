@@ -1,7 +1,11 @@
 from typing import Iterable
 
-from src.qitip.builders import ConstraintsBuilder, InequalityBuilder
-from src.qitip.objects import Constraints, Inequality
+from src.qitip.objects import (
+    Constraints,
+    ConstraintsBuilder,
+    Inequality,
+    InequalityBuilder,
+)
 from src.qitip.utils.converters import CoefficientsToDict
 
 # Test with bipartite system for simplicity

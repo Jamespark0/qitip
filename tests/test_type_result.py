@@ -1,6 +1,11 @@
-from src.qitip.builders import ConstraintsBuilder, InequalityBuilder
-from src.qitip.objects import Constraints, EntropicSpace, Inequality
-from src.qitip.objects.type_result import result_director
+from src.qitip.objects import (
+    Constraints,
+    ConstraintsBuilder,
+    EntropicSpace,
+    Inequality,
+    InequalityBuilder,
+    result_director,
+)
 from src.qitip.prover import Prover
 
 
