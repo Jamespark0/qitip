@@ -6,12 +6,12 @@ from src.qitip.objects import (
     EntropicSpace,
     Inequality,
     InequalityBuilder,
+    InfoType,
     SpacePool,
     TypeResult,
     result_director,
 )
 from src.qitip.prover import Prover, ProverPool
-from src.qitip.typings import InfoType
 from src.qitip.utils.converters import CoefficientsToDict
 
 
