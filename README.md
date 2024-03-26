@@ -50,7 +50,7 @@ S(\hat{\rho}) = -\mathrm{Tr}(\hat{\rho}\log\hat{\rho}).
 One can also apply this formula to any reduced density matrix of some quantum system. 
 
 There are a set of rules that a quantum system must satisfy. 
-These rules are **strong sub-additivity** and **weak monotonicity**. Consider an $`n-`$party quantum system. In principle, one can index each party with an integer $i\in \set{1,2,...,n}$. Let $N$ be the set $\set{1,2,...,n}$ and $I, J\subseteq N$, the general form of strong sub-addivity and weak monotoncity[[1]](#1) is given as 
+These rules are **strong sub-additivity** and **weak monotonicity**. Consider an $`n-`$party quantum system. In principle, one can index each party with an integer $i\in \set{1,2,...,n}$. Let $N$ be the set $\set{1,2,...,n}$ and $I, J\subseteq N$, the general form of strong sub-addivity and weak monotoncit [[1]](#1) is given as 
 ```math
 \begin{cases}
 S(\hat{\rho}_{I}) + S(\hat{\rho}_{J}) \geq S(\hat{\rho}_{I \cup J}) + S(\hat{\rho}_{I \cap J})\\
@@ -62,7 +62,7 @@ The set of these inequalities are referred to as **basic inequalities**.
 Information inequalities play a crucial role in information theory. 
 In practice, an information inequality is the linear combination of von-Neumann entropy, conditinal entropy, mutual information and conditional mutual information. By their definitions, an information inequality can be expressed as the linear combination of marginal entropies which is called the **canonical expression**.
 Proving if an inequality can be derived from the basic inequalities is no easy task in quantum information theory, and neither is its counterpart in classical information theory. 
-In classical information theory, an algorithm was proposed to automate the process (Ho et all., 2020 [[2]](#2)). As far as we know, there is no such tool in quantum information theory. This package is built on top of the classical algorithm[[2]](#2), and aims to be the cornerstone to bridge the gap.
+In classical information theory, an algorithm was proposed to automate the process (Ho et all., 2020 [[2]](#2)). As far as we know, there is no such tool in quantum information theory. This package is built on top of the classical algorithm [[2]](#2), and aims to be the cornerstone to bridge the gap.
 
 ## Installation (under progress)
 The package hopes to be available on [Python Package Index (PyPI)](https://pypi.org)
@@ -153,7 +153,7 @@ constraints = q3.constraints.from_coefficients([{(1,2): 1, (1,3):1, (1,2,3): -1,
 ```
 
 ### Embedding in higher-dimensional space
-In classical information theory, Yeung has shown that an unconstrained information inequality with four random variables is actually an Shannon-type inequality with six random variables[[3]](#3). 
+In classical information theory, Yeung has shown that an unconstrained information inequality with four random variables is actually an Shannon-type inequality with six random variables [[3]](#3). 
 Therefore, I think adding the funcitonality to embed existing inequalities or constraints in a quantum system with more parties may be useful.
 
 Assume an ineqaulity, `inequality`, and constraints, `constraints`, are defined in a quantum system with $`n-`$parties. If one is to investigate the inequality and the constraints in a quantum system with $`m-`$parties where $m > n$, one can achieve by running the code
