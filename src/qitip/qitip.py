@@ -75,7 +75,3 @@ class Qitip:
     @property
     def vector_entry(self):
         return self._space.vector_entry
-
-    @property
-    def space(self):
-        return self._space
