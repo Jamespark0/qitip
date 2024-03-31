@@ -119,3 +119,31 @@ def test_constrained_non_von_neumann_type() -> None:
     inequality[space.vector_entry[frozenset({1, 2, 3})]] = 1
 
     assert prover._check_type(inequality=inequality, constraints=constraints) is False
+
+
+def test_quantum_zhang_yeung_inequality() -> None:
+    n: int = 4
+    space = EntropicSpace(n)
+
+    prover = Prover(space=space)
+
+    inequality = np.zeros(len(space.vector_entry))
+    # Zhang-Yeung Inequality in canonical form
+    inequality[space.vector_entry[frozenset({1})]] = -2
+    inequality[space.vector_entry[frozenset({2})]] = -2
+    inequality[space.vector_entry[frozenset({3})]] = -1
+    inequality[space.vector_entry[frozenset({1, 4})]] = 1
+    inequality[space.vector_entry[frozenset({2, 4})]] = 1
+    inequality[space.vector_entry[frozenset({3, 4})]] = -1
+    inequality[space.vector_entry[frozenset({1, 2})]] = 3
+    inequality[space.vector_entry[frozenset({1, 3})]] = 3
+    inequality[space.vector_entry[frozenset({2, 3})]] = 3
+    inequality[space.vector_entry[frozenset({1, 2, 3})]] = -4
+    inequality[space.vector_entry[frozenset({1, 2, 4})]] = -1
+
+    assert (
+        prover._check_type(
+            inequality, constraints=np.empty((0, len(space.vector_entry)))
+        )
+        is False
+    )
