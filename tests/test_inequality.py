@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
-
-from src.qitip.objects import Inequality
+from qitip.objects import Inequality
 
 vector_entry: dict[frozenset[int], int] = {
     frozenset((1,)): 0,

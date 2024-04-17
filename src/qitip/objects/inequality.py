@@ -8,8 +8,8 @@ from typing import Iterable, Optional
 import numpy as np
 from numpy.typing import ArrayLike
 
-from src.qitip.utils.converters import create_vector_with_coefficient
-from src.qitip.utils.validators import validate_vector
+from qitip.utils.converters import create_vector_with_coefficient
+from qitip.utils.validators import validate_vector
 
 
 @dataclass

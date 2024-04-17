@@ -1,11 +1,11 @@
 import numpy as np
 from scipy.optimize import OptimizeResult, linprog
 
-from src.qitip.objects import EntropicSpace
+from qitip.objects import EntropicSpace
 
 # Prover is created with Quantum Elemental Inequalities
 # In principle, it can also be created with classical elemental inequalities
-from src.qitip.quantum_inequalities import QuantumElementalInequalities
+from qitip.quantum_inequalities import QuantumElementalInequalities
 
 
 class Prover:

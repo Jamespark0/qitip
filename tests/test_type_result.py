@@ -1,4 +1,4 @@
-from src.qitip.objects import (
+from qitip.objects import (
     Constraints,
     ConstraintsBuilder,
     EntropicSpace,
@@ -6,7 +6,7 @@ from src.qitip.objects import (
     InequalityBuilder,
     result_director,
 )
-from src.qitip.prover import Prover
+from qitip.prover import Prover
 
 
 def test_winter_linden_inequality() -> None:

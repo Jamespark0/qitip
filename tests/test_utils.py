@@ -1,12 +1,12 @@
 from typing import Iterable
 
-from src.qitip.objects import (
+from qitip.objects import (
     Constraints,
     ConstraintsBuilder,
     Inequality,
     InequalityBuilder,
 )
-from src.qitip.utils.converters import CoefficientsToDict
+from qitip.utils.converters import CoefficientsToDict
 
 # Test with bipartite system for simplicity
 vector_entry: dict[frozenset[int], int] = {

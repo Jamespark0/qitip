@@ -3,9 +3,9 @@ from typing import Optional
 
 from numpy import array
 
-from src.qitip.objects import Constraints, Inequality
-from src.qitip.prover import Prover
-from src.qitip.utils.converters import CoefficientsToDict, canonical_to_expression
+from qitip.objects import Constraints, Inequality
+from qitip.prover import Prover
+from qitip.utils.converters import CoefficientsToDict, canonical_to_expression
 
 
 @dataclass

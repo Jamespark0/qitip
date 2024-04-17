@@ -1,4 +1,4 @@
-from src.qitip.main import init
+from qitip.main import init
 
 while True:
     try:

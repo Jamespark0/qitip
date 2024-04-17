@@ -1,4 +1,4 @@
-from src.qitip.qitip import Qitip
+from qitip.qitip import Qitip
 
 
 def init(n: int) -> Qitip:

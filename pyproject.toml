@@ -1,9 +1,9 @@
 [project]
 name = "qitip"
-version = "0.1.0"
+version = "0.1.0a1"
 description = "Python package that serves as quantum information inequality prover"
 authors = [
-    {name = "Shao-Lun Huang", email = "shaolh105022105@gmail.com"},
+    { name = "Shao-Lun Huang", email = "shaolh105022105@gmail.com" },
 ]
 dependencies = [
     "numpy>=1.26.4",
@@ -11,12 +11,19 @@ dependencies = [
 ]
 requires-python = ">=3.11"
 readme = "README.md"
-license = {text = "MIT"}
+
+[project.license]
+text = "MIT"
+
+[project.urls]
+Home = "https://github.com/Jamespark0/qitip"
 
 [build-system]
-requires = ["setuptools>=61", "wheel"]
+requires = [
+    "setuptools>=61",
+    "wheel",
+]
 build-backend = "setuptools.build_meta"
-
 
 [tool.pdm]
 distribution = true
@@ -26,6 +33,3 @@ test = [
     "pytest>=8.1.1",
     "pytest-cov>=5.0.0",
 ]
-
-[project.urls]
-Home = "https://github.com/Jamespark0/qitip"

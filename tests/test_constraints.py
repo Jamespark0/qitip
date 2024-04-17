@@ -1,4 +1,4 @@
-from src.qitip.objects import Constraints
+from qitip.objects import Constraints
 
 vector_entry: dict[frozenset[int], int] = {
     frozenset((1,)): 0,

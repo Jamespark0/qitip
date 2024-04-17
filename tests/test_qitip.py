@@ -1,9 +1,8 @@
 from typing import Iterable
 
 import numpy as np
-
-from src.qitip.objects import Constraints, Inequality
-from src.qitip.qitip import Qitip
+from qitip.objects import Constraints, Inequality
+from qitip.qitip import Qitip
 
 
 def test_embed_inequality_to_higher_dim() -> None:

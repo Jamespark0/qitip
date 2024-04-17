@@ -1,8 +1,7 @@
 from typing import Iterable, Sequence
 
 import numpy as np
-
-from src.qitip.objects import (
+from qitip.objects import (
     Constraints,
     ConstraintsBuilder,
     Inequality,

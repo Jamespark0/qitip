@@ -1,10 +1,9 @@
 import numpy as np
 from numpy.typing import NDArray
+from qitip.objects import EntropicSpace
+from qitip.prover import Prover
 
-from src.qitip.objects import EntropicSpace
-from src.qitip.prover import Prover
-
-# from src.qitip.quantum_inequalities import QuantumElementalInequalities
+# from qitip.quantum_inequalities import QuantumElementalInequalities
 
 """
 The prover can also be applied in the classical regime by replacing 

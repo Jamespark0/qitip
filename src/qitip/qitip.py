@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.qitip.objects import (
+from qitip.objects import (
     Constraints,
     ConstraintsBuilder,
     EntropicSpace,
@@ -11,8 +11,8 @@ from src.qitip.objects import (
     TypeResult,
     result_director,
 )
-from src.qitip.prover import Prover, ProverPool
-from src.qitip.utils.converters import CoefficientsToDict
+from qitip.prover import Prover, ProverPool
+from qitip.utils.converters import CoefficientsToDict
 
 
 class Qitip:

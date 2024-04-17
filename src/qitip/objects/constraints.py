@@ -4,8 +4,8 @@ from typing import Iterable
 import numpy as np
 from numpy.typing import ArrayLike
 
-from src.qitip.utils.converters import create_matrix_with_coefficient_list
-from src.qitip.utils.validators import validate_matrix
+from qitip.utils.converters import create_matrix_with_coefficient_list
+from qitip.utils.validators import validate_matrix
 
 
 def update_constraints(

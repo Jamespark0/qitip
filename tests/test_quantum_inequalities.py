@@ -1,8 +1,7 @@
 import numpy as np
 import pytest
-
-from src.qitip.objects import EntropicSpace
-from src.qitip.quantum_inequalities import QuantumElementalInequalities
+from qitip.objects import EntropicSpace
+from qitip.quantum_inequalities import QuantumElementalInequalities
 
 
 def test_one_system_all_inequalities():

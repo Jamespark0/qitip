@@ -1,0 +1,127 @@
+# This workflow will upload a Python Package using Twine when a release is created
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Release Python Package
+
+on:
+  # release:
+  #   types: [created]
+  push:
+    tags:
+      - "**"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Distribution
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.11]
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install pypa/build
+        run: >-
+          python3 -m pip install --upgrade pip
+          pip install build
+      
+      - name: Build package
+        run: python -m build
+
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+        
+
+  publish-to-test-pypi:
+    name: Publish package to TestPyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    environment: test-pypi
+    permissions: 
+      id-token: write # IMPORTANT: mandatory for trusted publishing
+    
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+        
+      - name: Publish package to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+  
+  publish-to-pypi:
+    name: Publish package to PyPI only when publishing to TestPyPI successfully
+    needs: [build, publish-to-test-pypi]
+
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+    runs-on: ubuntu-latest
+
+    environment: pypi
+    permissions:
+      id-token: write
+    
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+        
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+  
+  github-release-without-signature:
+    name: Create a GitHub release draft without signature when a tag is pushed to GitHub and is submitted to PyPI
+
+    needs: [build, publish-to-pypi]
+    # if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success')}}
+    
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+    
+    steps:
+      - name: Create release message
+        id: release_note
+        uses: mikepenz/release-changelog-builder-action@v4        
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commitMode: true
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.release_note.outputs.changelog }}
+            # Changes in this Release
+            # - First Change
+            # - Second Change
+          draft: true
+          prerelease: true

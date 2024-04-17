@@ -1,5 +1,5 @@
-from src.qitip.objects.constraints import Constraints, ConstraintsBuilder
-from src.qitip.objects.entrospace import EntropicSpace, SpacePool
-from src.qitip.objects.inequality import Inequality, InequalityBuilder
-from src.qitip.objects.type_result import TypeResult, result_director
-from src.qitip.objects.typings import InfoType
+from qitip.objects.constraints import Constraints, ConstraintsBuilder
+from qitip.objects.entrospace import EntropicSpace, SpacePool
+from qitip.objects.inequality import Inequality, InequalityBuilder
+from qitip.objects.type_result import TypeResult, result_director
+from qitip.objects.typings import InfoType

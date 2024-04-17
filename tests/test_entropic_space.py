@@ -1,4 +1,4 @@
-from src.qitip.objects import EntropicSpace
+from qitip.objects import EntropicSpace
 
 
 def test_from_no_random_variable() -> None:
