@@ -64,7 +64,7 @@ In practice, an information inequality is the linear combination of von-Neumann 
 Proving if an inequality can be derived from the basic inequalities is no easy task in quantum information theory, and neither is its counterpart in classical information theory. 
 In classical information theory, an algorithm was proposed to automate the process (Ho et all., 2020 [[2]](#2)). As far as we know, there is no such tool in quantum information theory. This package is built on top of the classical algorithm [[2]](#2), and aims to be the cornerstone to bridge the gap.
 
-## Installation (under progress)
+## Installation 
 The package is available on [Python Package Index (PyPI)](https://pypi.org)
 ```
 pip install qitip
