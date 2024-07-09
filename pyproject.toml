@@ -1,6 +1,6 @@
 [project]
 name = "qitip"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python package that serves as quantum information inequality prover"
 authors = [
     { name = "Shao-Lun Huang", email = "shaolh105022105@gmail.com" },
