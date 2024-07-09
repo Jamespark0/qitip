@@ -27,15 +27,12 @@ class ResultBuilder:
         self._result: TypeResult = TypeResult()
 
     def process_type(self, inequality: Inequality, constraints: Constraints) -> None:
-
         self._result.status = self._prover._check_type(
             inequality.coefficients, constraints.coefficients
         )
 
         # Abbreviation for von-Neumann type
-        vn_message: str = (
-            "It's von-Neumann type inequality.\n\nIt can be proved by summing up the following:\n"
-        )
+        vn_message: str = "It's von-Neumann type inequality.\n\nIt can be proved by summing up the following:\n"
         # Abbreviation for non-Provable type
         np_message: str = (
             "Not provable by Quantum ITIP:(\n\nOne can try to disprove by using:\n"
@@ -70,14 +67,14 @@ class ResultBuilder:
             for elemental, coefficient in CoefficientsToDict.convert_vector(
                 vector_entry=inequality_entry, coefficients=used_inequalities
             ).items():
-
                 # Notice that the keys of the inequality_entries are "tuples" !!!!!
                 self._result.message += f"{coefficient} * [{canonical_to_expression(CoefficientsToDict.convert_vector(vector_entry=inequality.vector_entry, coefficients=array(elemental)))}] >= 0\n"
 
             for constraint, coefficient in CoefficientsToDict.convert_vector(
                 vector_entry=constraints_entry, coefficients=used_constraints
             ).items():
-                self._result.message += f"{coefficient} * [{canonical_to_expression(CoefficientsToDict.convert_vector(vector_entry=constraints.vector_entry, coefficients=array(constraint)))}] = 0\n"
+                # The negative 1 comes from the expression of duality
+                self._result.message += f"{-1*coefficient} * [{canonical_to_expression(CoefficientsToDict.convert_vector(vector_entry=constraints.vector_entry, coefficients=array(constraint)))}] = 0\n"
 
         # not provable by quantum ITIP
         else:

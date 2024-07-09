@@ -64,7 +64,7 @@ class Prover:
             return result.success
         else:
             raise ValueError(
-                f"Unexpected error has occurred. Expected optimal value is {max_value}, but get {max.func} instead."
+                f"Unexpected error has occurred. Expected optimal value is {max_value}, but get {result.fun} instead."
             )
 
     def _shortest_proof(
